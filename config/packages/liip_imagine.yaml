@@ -1,0 +1,29 @@
+liip_imagine:
+  loaders:
+    loader_aws_s3_images:
+      stream:
+        # This refers to knp_gaufrette filesystems configuration
+        wrapper: gaufrette://filesystem_aws_s3_images/
+  resolvers:
+    cache_resolver_aws_s3:
+      aws_s3:
+        client_config:
+          credentials:
+            key: "%aws.key%"
+            secret: "%aws.secret%"
+          region: "%aws.region%"
+          version: "%aws.version%"
+        bucket: "%aws.image_bucket%"
+        get_options:
+          Scheme: 'https'
+        put_options:
+          CacheControl: 'max-age=86400'
+  filter_sets:
+    thumbnail:
+      data_loader: loader_aws_s3_images
+      # We don't yet have a cache resolver configured
+      # cache: cache_resolver_aws_s3
+      cache: ~
+      quality: 75
+      filters:
+        thumbnail: { size: [ 50, 50 ], mode: inset }              

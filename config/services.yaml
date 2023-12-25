@@ -1,0 +1,49 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    aws.key: '%env(resolve:AWS_KEY)%'
+    aws.secret: '%env(resolve:AWS_SECRET_KEY)%' 
+    aws.image_bucket: '%env(resolve:AWS_S3_IMAGE_BUCKET_NAME)%' 
+    aws.report_bucket: '%env(resolve:AWS_S3_REPORT_BUCKET_NAME)%' 
+    aws.region: '%env(resolve:AWS_REGION)%' 
+    aws.version: '2006-03-01'
+    user.allow_registration: '%env(resolve:ALLOW_REGISTRATION)%'
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    Liip\ImagineBundle\Service\FilterService:
+        alias: 'liip_imagine.service.filter'
+
+    Knp\Bundle\GaufretteBundle\FilesystemMap:
+        alias: 'knp_gaufrette.filesystem_map'
+
+    # shq.amazon.s3Credentials:
+    #     class: Aws\Credentials\Credentials
+    #     arguments: ["%aws.key%", "%aws.secret%"]
+
+    shq.amazon.s3:
+        class: Aws\S3\S3Client
+        arguments:
+            - 
+                version: "%aws.version%"
+                region: "%aws.region%"
+                # credentials: "@shq.amazon.s3Credentials"
+                credentials: { key: "%aws.key%", secret: "%aws.secret%" }
+    

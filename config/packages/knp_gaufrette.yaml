@@ -1,0 +1,13 @@
+knp_gaufrette:
+    adapters:
+        adapter_aws_s3_images:
+            aws_s3:
+                service_id: shq.amazon.s3 # ! ! ! Without @ ! ! !
+                bucket_name: "%aws.image_bucket%"
+                options:
+                    directory: 'images'
+                    create: true
+    filesystems:
+        filesystem_aws_s3_images:
+            adapter: adapter_aws_s3_images
+    stream_wrapper: ~
